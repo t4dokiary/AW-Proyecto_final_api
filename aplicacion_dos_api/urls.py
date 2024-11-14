@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from aplicacion_dos_api.views import bootstrap
-from aplicacion_dos_api.views import administrador
+from aplicacion_dos_api.views import users
 from aplicacion_dos_api.views import alumno
 from aplicacion_dos_api.views import maestro
 from aplicacion_dos_api.views import auth
@@ -25,13 +25,19 @@ urlpatterns = [
     #Version
         path('bootstrap/version', bootstrap.VersionView.as_view()),
     #Create Admin
-        path('admin/', administrador.AdminView.as_view()),
-    #Create Student
+        path('admin/', users.AdminView.as_view()),
+    #Admin Data
+        path('lista-admins/', users.AdminAll.as_view()),
+    #Edit Admin
+        path('admins-edit/', users.AdminsViewEdit.as_view()),
+    #Create Alumno
         path('alumno/', alumno.AlumnoView.as_view()),
-    #Create Teacher
-        path('maestro/', maestro.MaestroView.as_view()),
-    #User Data
-        path('me/', administrador.Userme.as_view()),
+    #Create Maestro
+        path('maestro/', maestro.MaestrosView.as_view()),
+    #Maestro Data
+        path('lista-maestros/', maestro.MaestrosAll.as_view()),
+    #Edit Maestro
+        path('maestros-edit/', maestro.MaestrosViewEdit.as_view()),
     #Login
         path('token/', auth.CustomAuthToken.as_view()),
     #Logout

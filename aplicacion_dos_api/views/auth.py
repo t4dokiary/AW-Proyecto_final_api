@@ -30,11 +30,9 @@ import string
 import random
 
 class CustomAuthToken(ObtainAuthToken):
-
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         if user.is_active:
@@ -44,9 +42,10 @@ class CustomAuthToken(ObtainAuthToken):
                 role_names.append(role.name)
             #Si solo es un rol especifico asignamos el elemento 0
             role_names = role_names[0]
-
+            #Se crea el token de inicio de sesión
             token, created = Token.objects.get_or_create(user=user)
-
+            #Se crea el token de inicio de sesión
+            token, created = Token.objects.get_or_create(user=user)
             if role_names == 'alumno':
                 alumno = Alumnos.objects.filter(user=user).first()
                 alumno = AlumnoSerializer(alumno).data
@@ -60,27 +59,24 @@ class CustomAuthToken(ObtainAuthToken):
                 maestro["rol"] = "maestro"
                 return Response(maestro,200)
             if role_names == 'administrador':
-                administrador = Administradores.objects.filter(user=user).first()
-                administrador = AdminSerializer(administrador).data
-                administrador["token"] = token.key
-                administrador["rol"] = "administrador"
-                return Response(administrador,200)
+                user = UserSerializer(user, many=False).data
+                user["token"] = token.key
+                user["rol"] = "administrador"
+                return Response(user,200)
             else:
                 return Response({"details":"Forbidden"},403)
-
+                pass
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
+
 class Logout(generics.GenericAPIView):
-
     permission_classes = (permissions.IsAuthenticated,)
-
     def get(self, request, *args, **kwargs):
-
         print("logout")
-        administrador = request.administrador
-        print(str(administrador))
-        if administrador.is_active:
-            token = Token.objects.get(user=administrador)
+        user = request.user
+        print(str(user))
+        if user.is_active:
+            token = Token.objects.get(user=user)
             token.delete()
             return Response({'logout':True})
         return Response({'logout': False})
