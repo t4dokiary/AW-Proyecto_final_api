@@ -22,22 +22,34 @@ from aplicacion_dos_api.views import maestro
 from aplicacion_dos_api.views import auth
 
 urlpatterns = [
-    #Version
+    #versiones
         path('bootstrap/version', bootstrap.VersionView.as_view()),
-    #Create Admin
+    
+    #Administradores
+    #Crear
         path('admin/', users.AdminView.as_view()),
-    #Admin Data
+    #Listar
         path('lista-admins/', users.AdminAll.as_view()),
-    #Edit Admin
+    #Editar
         path('admins-edit/', users.AdminsViewEdit.as_view()),
-    #Create Alumno
-        path('alumno/', alumno.AlumnoView.as_view()),
-    #Create Maestro
+        
+    #Alumnos
+    #Crear
+        path('alumnos/', alumno.AlumnoView.as_view()),
+    #Listar
+        path('lista-alumnos/', alumno.AlumnoAll.as_view()),
+    #Editar
+        path('alumnos-edit/', alumno.AlumnosViewEdit.as_view()),
+    
+    #Maestros
+    #Crear
         path('maestro/', maestro.MaestrosView.as_view()),
-    #Maestro Data
+    #Listar
         path('lista-maestros/', maestro.MaestrosAll.as_view()),
-    #Edit Maestro
+    #Editar
         path('maestros-edit/', maestro.MaestrosViewEdit.as_view()),
+        
+    #Servicios de autenticacion
     #Login
         path('token/', auth.CustomAuthToken.as_view()),
     #Logout

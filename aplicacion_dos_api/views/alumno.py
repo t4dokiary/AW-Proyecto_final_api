@@ -36,6 +36,15 @@ class Userme(generics.CreateAPIView):
         user = request.user
         #TODO: Regresar perfil del usuario
         return Response({})
+    
+class AlumnoAll(generics.CreateAPIView):
+    #Esta funcion es para obtener todos los alumnos
+    permission_classes = (permissions.IsAuthenticated,)
+    def get(self, request, *args, **kwargs):
+        alumnos = Alumnos.objects.filter(user__is_active=1).order_by("id")
+        lista = AlumnoSerializer(alumnos, many=True).data
+        
+        return Response(lista, 200)
       
 class AlumnoView(generics.CreateAPIView):
     #Obtener usuario por ID
@@ -95,3 +104,35 @@ class AlumnoView(generics.CreateAPIView):
             return Response({"alumno_created_id": alumno.id }, 201)
 
         return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#se agrega edicion y eliminacion de alumnos
+class AlumnosViewEdit(generics.CreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def put(self, request, *args, **kwargs):
+        # iduser=request.data["id"]
+        alumno = get_object_or_404(Alumnos, id=request.data["id"])
+        alumno.id_matricula = request.data["id_matricula"]
+        alumno.fecha_nacimiento = request.data["fecha_nacimiento"]
+        alumno.curp = request.data["curp"]
+        alumno.rfc = request.data["rfc"]
+        alumno.edad = request.data["edad"]
+        alumno.telefono = request.data["telefono"]
+        alumno.ocupacion = request.data["ocupacion"]
+        alumno.save()
+        
+        temp = alumno.user
+        temp.first_name = request.data["first_name"]
+        temp.last_name = request.data["last_name"]
+        temp.save()
+        
+        user = AlumnoSerializer(alumno, many=False).data
+        
+        return Response(user, 200)
+    
+    def delete(self, request, *args, **kwargs):
+        profile = get_object_or_404(Alumnos, id=request.GET.get("id"))
+        try:
+            profile.user.delete()
+            return Response({"details":"Perfil eliminado"},200)
+        except:
+            return Response({"details":"Error al eliminar el perfil"},400)
